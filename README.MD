@@ -1,7 +1,3 @@
-Below is a comprehensive requirement specification for a single Symfony application that incorporates all eight must-have PHP skills (plus key extras) into one cohesive project.
-
----
-
 # Project: Symfony Unified Event & Collaboration Platform
 
 A web application for teams to manage events, collaborate on posts, integrate notifications, and expose APIs—built entirely with Symfony and modern front-end tools.
@@ -128,4 +124,3 @@ A web application for teams to manage events, collaborate on posts, integrate no
 6. CI/CD configuration files.
 7. Monitoring & metrics setup guides.
 8. README detailing setup, architecture overview, and contribution guidelines.
-
