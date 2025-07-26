@@ -15,5 +15,9 @@
         "dev": "encore dev",
         "watch": "encore dev --watch",
         "build": "encore production --progress"
+    },
+    "dependencies": {
+        "@vitejs/plugin-vue": "^6.0.0",
+        "vue": "^3.5.18"
     }
 }
