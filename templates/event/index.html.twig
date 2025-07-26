@@ -1,0 +1,151 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Events{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold">Events</h1>
+    </div>
+
+    {# Filter Form #}
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <form method="GET" class="flex flex-wrap gap-4">
+            <div class="flex-1 min-w-48">
+                <label for="status" class="block text-gray-700 text-sm font-bold mb-2">Status</label>
+                <select name="status" id="status" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
+                    <option value="">All Statuses</option>
+                    <option value="published" {% if app.request.query.get('status') == 'published' %}selected{% endif %}>Published</option>
+                    <option value="draft" {% if app.request.query.get('status') == 'draft' %}selected{% endif %}>Draft</option>
+                    <option value="cancelled" {% if app.request.query.get('status') == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+            
+            <div class="flex-1 min-w-48">
+                <label for="location" class="block text-gray-700 text-sm font-bold mb-2">Location</label>
+                <input type="text" name="location" id="location" value="{{ app.request.query.get('location') }}" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                       placeholder="Search by location...">
+            </div>
+            
+            <div class="flex-1 min-w-48">
+                <label for="search" class="block text-gray-700 text-sm font-bold mb-2">Search</label>
+                <input type="text" name="search" id="search" value="{{ app.request.query.get('search') }}" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                       placeholder="Search events...">
+            </div>
+            
+            <div class="flex items-end">
+                <button type="submit" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    Filter
+                </button>
+                <a href="{{ path('app_event_index') }}" class="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+                    Clear
+                </a>
+            </div>
+        </form>
+    </div>
+
+    {# Events Grid #}
+    {% if events is empty %}
+        <div class="text-center py-8">
+            <h3 class="text-xl text-gray-600">No events found</h3>
+            <p class="text-gray-500 mt-2">Try adjusting your filters or create a new event.</p>
+        </div>
+    {% else %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for event in events %}
+                <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">
+                            <a href="{{ path('app_event_show', {'id': event.id}) }}" class="text-blue-600 hover:text-blue-800">
+                                {{ event.title }}
+                            </a>
+                        </h3>
+                        
+                        <div class="text-gray-600 mb-3">
+                            <div class="flex items-center mb-1">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                                </svg>
+                                {{ event.startDate|date('M j, Y \\a\\t g:i A') }}
+                            </div>
+                            {% if event.location %}
+                                <div class="flex items-center mb-1">
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    {{ event.location }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if event.description %}
+                            <p class="text-gray-700 mb-3">{{ event.description|slice(0, 100) }}{% if event.description|length > 100 %}...{% endif %}</p>
+                        {% endif %}
+                        
+                        <div class="flex justify-between items-center">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                {% if event.status == 'published' %}bg-green-100 text-green-800
+                                {% elseif event.status == 'draft' %}bg-yellow-100 text-yellow-800
+                                {% elseif event.status == 'cancelled' %}bg-red-100 text-red-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ event.status|title }}
+                            </span>
+                            
+                            <div class="text-sm text-gray-500">
+                                {{ event.participants|length }} participant{{ event.participants|length != 1 ? 's' : '' }}
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 flex space-x-2">
+                            <a href="{{ path('app_event_show', {'id': event.id}) }}" 
+                               class="flex-1 text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
+                                View Details
+                            </a>
+                            <a href="{{ path('app_event_edit', {'id': event.id}) }}" 
+                               class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-sm">
+                                Edit
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {# Pagination #}
+        {% if totalPages > 1 %}
+            <div class="mt-8 flex justify-center">
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    {% if currentPage > 1 %}
+                        <a href="{{ path('app_event_index', app.request.query.all|merge({'page': currentPage - 1})) }}"
+                           class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            Previous
+                        </a>
+                    {% endif %}
+                    
+                    {% for page in 1..totalPages %}
+                        {% if page == currentPage %}
+                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-600">
+                                {{ page }}
+                            </span>
+                        {% else %}
+                            <a href="{{ path('app_event_index', app.request.query.all|merge({'page': page})) }}"
+                               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                {{ page }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if currentPage < totalPages %}
+                        <a href="{{ path('app_event_index', app.request.query.all|merge({'page': currentPage + 1})) }}"
+                           class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            Next
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

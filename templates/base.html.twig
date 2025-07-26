@@ -1,16 +1,98 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Event Manager{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>📅</text></svg>">
+        
+        <!-- Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        
         {% block stylesheets %}
-        {% endblock %}
-
-        {% block javascripts %}
+            {{ encore_entry_link_tags('app') }}
         {% endblock %}
     </head>
-    <body>
-        {% block body %}{% endblock %}
+    <body class="bg-gray-100 min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-lg">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center space-x-4">
+                        <a href="{{ path('app_default') }}" class="text-2xl font-bold text-blue-600">
+                            <i class="fas fa-calendar-alt mr-2"></i>Event Manager
+                        </a>
+                    </div>
+                    
+                    <div class="flex items-center space-x-6">
+                        <a href="{{ path('app_event_index') }}" class="text-gray-700 hover:text-blue-600 transition-colors">Events</a>
+                        <a href="#" class="text-gray-700 hover:text-blue-600 transition-colors">Blog</a>
+                        
+                        {% if app.user %}
+                            <div class="flex items-center space-x-4">
+                                <span class="text-gray-700">Hello, {{ app.user.fullName }}</span>
+                                <a href="#" class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded transition-colors">
+                                    Logout
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="flex items-center space-x-2">
+                                <a href="#" class="text-blue-600 hover:text-blue-800 transition-colors">Login</a>
+                                <a href="#" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors">
+                                    Register
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Flash Messages -->
+        {% for category, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="bg-{{ category == 'error' ? 'red' : category == 'success' ? 'green' : 'blue' }}-100 border border-{{ category == 'error' ? 'red' : category == 'success' ? 'green' : 'blue' }}-400 text-{{ category == 'error' ? 'red' : category == 'success' ? 'green' : 'blue' }}-700 px-4 py-3 rounded mx-4 mt-4" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <!-- Main Content -->
+        <main>
+            {% block body %}{% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white mt-16">
+            <div class="container mx-auto px-4 py-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Event Manager</h3>
+                        <p class="text-gray-400">A unified platform for event management and collaboration.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="{{ path('app_event_index') }}" class="hover:text-white transition-colors">Events</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">API Docs</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                        <p class="text-gray-400">Built with Symfony & Vue.js</p>
+                    </div>
+                </div>
+                <div class="border-t border-gray-700 mt-8 pt-4 text-center text-gray-400">
+                    <p>&copy; {{ 'now'|date('Y') }} Event Manager. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
     </body>
 </html>
