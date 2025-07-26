@@ -1,5 +1,6 @@
 # Project: Symfony Unified Event & Collaboration Platform
 
+
 A web application for teams to manage events, collaborate on posts, integrate notifications, and expose APIs—built entirely with Symfony and modern front-end tools.
 
 ## 1. Objectives & Scope
