@@ -1,0 +1,11 @@
+services:
+    # Test-specific configurations
+    _defaults:
+        public: true
+        autowire: true
+        autoconfigure: true
+        
+    # Make all services available for testing
+    App\:
+        resource: '../src/'
+        public: true

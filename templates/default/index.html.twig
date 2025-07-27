@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Welcome to Event Manager{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <!-- Hero Section -->
+    <div class="container mx-auto px-4 py-16">
+        <div class="text-center">
+            <h1 class="text-5xl font-bold text-gray-900 mb-6">
+                Welcome to Event Manager
+            </h1>
+            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                A unified platform for event management and collaboration. Organize, manage, and participate in events with ease.
+            </p>
+            
+            {% if app.user %}
+                <div class="bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto">
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="bg-green-100 rounded-full p-3">
+                            <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                        Welcome back, {{ app.user.firstName }}!
+                    </h3>
+                    <p class="text-gray-600 mb-4">
+                        You're logged in as: {{ app.user.email }}
+                    </p>
+                    <div class="flex flex-col space-y-2">
+                        <a href="{{ path('app_profile') }}" 
+                           class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                            View Profile
+                        </a>
+                        <a href="{{ path('app_event_index') }}" 
+                           class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors">
+                            Browse Events
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="flex justify-center space-x-4">
+                    <a href="{{ path('app_register') }}" 
+                       class="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors">
+                        Get Started
+                    </a>
+                    <a href="{{ path('app_login') }}" 
+                       class="bg-white text-blue-600 px-8 py-3 rounded-lg text-lg font-semibold border-2 border-blue-600 hover:bg-blue-50 transition-colors">
+                        Sign In
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="container mx-auto px-4 py-16">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Key Features</h2>
+            <p class="text-gray-600">Everything you need to manage events effectively</p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+                <div class="bg-blue-100 rounded-full p-3 w-16 h-16 mx-auto mb-4">
+                    <svg class="w-10 h-10 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Event Management</h3>
+                <p class="text-gray-600">Create, organize, and manage events with comprehensive tools and features.</p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+                <div class="bg-green-100 rounded-full p-3 w-16 h-16 mx-auto mb-4">
+                    <svg class="w-10 h-10 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">User Management</h3>
+                <p class="text-gray-600">Role-based access control with user registration, authentication, and profiles.</p>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+                <div class="bg-purple-100 rounded-full p-3 w-16 h-16 mx-auto mb-4">
+                    <svg class="w-10 h-10 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Content Management</h3>
+                <p class="text-gray-600">Blog system for announcements, updates, and community engagement.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
