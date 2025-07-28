@@ -14,9 +14,21 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class RegistrationController extends AbstractController
 {
-    #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+    #[Route('/register', name: 'app_register', methods: ['GET'])]
+    public function showRegistrationForm(): Response
     {
+        // Only create form for display, no User object needed yet
+        $form = $this->createForm(RegistrationFormType::class);
+
+        return $this->render('registration/register.html.twig', [
+            'registrationForm' => $form,
+        ]);
+    }
+
+    #[Route('/register', name: 'app_register_process', methods: ['POST'])]
+    public function processRegistration(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+    {
+        // Only create User object when actually processing the form
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
@@ -48,6 +60,7 @@ class RegistrationController extends AbstractController
             }
         }
 
+        // If form has validation errors, re-render with errors
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form,
         ]);
