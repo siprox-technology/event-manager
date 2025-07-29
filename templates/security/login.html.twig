@@ -20,6 +20,13 @@
         {% if error %}
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                 <span class="block sm:inline">{{ error.messageKey|trans(error.messageData, 'security') }}</span>
+                {% if 'email address is not verified' in error.messageKey|trans(error.messageData, 'security') %}
+                    <div class="mt-2">
+                        <a href="{{ path('app_resend_verification') }}" class="text-red-600 hover:text-red-800 underline text-sm">
+                            Click here to resend verification email
+                        </a>
+                    </div>
+                {% endif %}
             </div>
         {% endif %}
 

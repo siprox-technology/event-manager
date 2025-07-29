@@ -64,8 +64,8 @@ final class RegistrationControllerTest extends WebTestCase
             'registration_form[agreeTerms]' => true,
         ]);
 
-        // Should redirect after successful registration
-        self::assertResponseRedirects();
+        // Should redirect to verification pending page after successful registration
+        self::assertResponseRedirects('/verification-pending');
 
         // Check that user was created in database
         $entityManager = $this->getEntityManager();
@@ -78,6 +78,12 @@ final class RegistrationControllerTest extends WebTestCase
         self::assertSame('Test', $user->getFirstName());
         self::assertSame('User', $user->getLastName());
         self::assertContains('ROLE_USER', $user->getRoles());
+        
+        // Check that user is not yet active and email is not verified
+        self::assertFalse($user->isActive());
+        self::assertFalse($user->isEmailVerified());
+        self::assertNotNull($user->getEmailVerificationToken());
+        self::assertNotNull($user->getEmailVerificationTokenExpiresAt());
 
         // Verify password was hashed
         self::assertNotSame('password123', $user->getPassword());

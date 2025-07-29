@@ -58,7 +58,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column]
-    private bool $isActive = true;
+    private bool $isActive = false;
+
+    #[ORM\Column]
+    private bool $isEmailVerified = false;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $emailVerificationToken = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $emailVerificationTokenExpiresAt = null;
 
     public function __construct()
     {
@@ -233,6 +242,65 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->updateTimestamp();
 
         return $this;
+    }
+
+    public function isEmailVerified(): bool
+    {
+        return $this->isEmailVerified;
+    }
+
+    public function setIsEmailVerified(bool $isEmailVerified): static
+    {
+        $this->isEmailVerified = $isEmailVerified;
+        $this->updateTimestamp();
+
+        return $this;
+    }
+
+    public function getEmailVerificationToken(): ?string
+    {
+        return $this->emailVerificationToken;
+    }
+
+    public function setEmailVerificationToken(?string $emailVerificationToken): static
+    {
+        $this->emailVerificationToken = $emailVerificationToken;
+        $this->updateTimestamp();
+
+        return $this;
+    }
+
+    public function getEmailVerificationTokenExpiresAt(): ?\DateTimeImmutable
+    {
+        return $this->emailVerificationTokenExpiresAt;
+    }
+
+    public function setEmailVerificationTokenExpiresAt(?\DateTimeImmutable $emailVerificationTokenExpiresAt): static
+    {
+        $this->emailVerificationTokenExpiresAt = $emailVerificationTokenExpiresAt;
+        $this->updateTimestamp();
+
+        return $this;
+    }
+
+    public function isEmailVerificationTokenExpired(): bool
+    {
+        if (!$this->emailVerificationTokenExpiresAt) {
+            return true;
+        }
+
+        return $this->emailVerificationTokenExpiresAt < new \DateTimeImmutable();
+    }
+
+    public function generateEmailVerificationToken(): string
+    {
+        $token = bin2hex(random_bytes(32));
+        $this->setEmailVerificationToken($token);
+        $this->setEmailVerificationTokenExpiresAt(
+            new \DateTimeImmutable('+24 hours')
+        );
+
+        return $token;
     }
 
     private function updateTimestamp(): void

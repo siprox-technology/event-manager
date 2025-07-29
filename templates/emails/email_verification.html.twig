@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Your Email Address - Event Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #3B82F6;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            background-color: #f9f9f9;
+            padding: 30px;
+            border-radius: 0 0 8px 8px;
+        }
+        .verification-box {
+            background-color: #FEF3C7;
+            border-left: 4px solid #F59E0B;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #3B82F6;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #2563EB;
+        }
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+        .warning {
+            background-color: #FEE2E2;
+            border-left: 4px solid #EF4444;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .code-block {
+            background-color: #F3F4F6;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            border: 1px solid #D1D5DB;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📧 Verify Your Email Address</h1>
+    </div>
+    
+    <div class="content">
+        <h2>Hello {{ user.firstName ?? 'there' }}!</h2>
+        
+        <p>Thank you for registering with <strong>Event Manager</strong>! To complete your registration and activate your account, please verify your email address.</p>
+        
+        <div class="verification-box">
+            <h3>⚠️ Action Required</h3>
+            <p><strong>Your account is currently inactive.</strong> You must verify your email address before you can log in and access Event Manager features.</p>
+        </div>
+        
+        <h3>Verify Your Email</h3>
+        <p>Click the button below to verify your email address and activate your account:</p>
+        
+        <div style="text-align: center;">
+            <a href="{{ verificationUrl }}" class="button">
+                ✅ Verify Email Address
+            </a>
+        </div>
+        
+        <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
+        <div class="code-block">
+            {{ verificationUrl }}
+        </div>
+        
+        <div class="warning">
+            <h4>⏰ Important:</h4>
+            <p>This verification link will expire on <strong>{{ expiresAt|date('F j, Y \\a\\t g:i A') }}</strong> (24 hours from registration).</p>
+            <p>If the link expires, you can request a new verification email.</p>
+        </div>
+        
+        <h3>What happens after verification?</h3>
+        <p>Once you verify your email, you'll be able to:</p>
+        <ul>
+            <li>🔐 Log in to your Event Manager account</li>
+            <li>🎯 Browse and register for events</li>
+            <li>👥 Connect with other event attendees</li>
+            <li>🎪 Create and manage your own events</li>
+            <li>📝 Participate in discussions and comments</li>
+        </ul>
+        
+        <h3>Didn't register?</h3>
+        <p>If you didn't create an account with Event Manager, please ignore this email. No account will be activated without email verification.</p>
+        
+        <p>If you have any questions or need assistance, please contact our support team.</p>
+        
+        <p>Best regards,<br>The Event Manager Team</p>
+    </div>
+    
+    <div class="footer">
+        <p>This verification email was sent to <strong>{{ user.email }}</strong> because someone registered for an Event Manager account with this email address.</p>
+        <p>Event Manager - Making events accessible to everyone</p>
+    </div>
+</body>
+</html>

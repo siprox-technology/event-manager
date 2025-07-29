@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Service\EmailVerificationService;
 use App\Service\UserEmailService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,15 +32,15 @@ class RegistrationController extends AbstractController
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
         EntityManagerInterface $entityManager,
-        UserEmailService $emailService
+        EmailVerificationService $emailVerificationService
     ): Response {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($this->processValidForm($form, $user, $userPasswordHasher, $entityManager, $emailService)) {
-                return $this->redirectToRoute('app_login');
+            if ($this->processValidForm($form, $user, $userPasswordHasher, $entityManager, $emailVerificationService)) {
+                return $this->redirectToRoute('app_verification_pending');
             }
         }
 
@@ -53,7 +54,7 @@ class RegistrationController extends AbstractController
         User $user,
         UserPasswordHasherInterface $userPasswordHasher,
         EntityManagerInterface $entityManager,
-        UserEmailService $emailService
+        EmailVerificationService $emailVerificationService
     ): bool {
         /** @var string $plainPassword */
         $plainPassword = $form->get('plainPassword')->getData();
@@ -62,16 +63,18 @@ class RegistrationController extends AbstractController
         $user->setRoles(['ROLE_USER']);
         $user->setCreatedAt(new \DateTimeImmutable());
         $user->setUpdatedAt(new \DateTimeImmutable());
-        $user->setIsActive(true);
+        // User starts as inactive and unverified
+        $user->setIsActive(false);
+        $user->setIsEmailVerified(false);
 
         try {
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Send welcome email
-            $emailService->sendRegistrationConfirmation($user);
+            // Send verification email
+            $emailVerificationService->sendVerificationEmail($user);
 
-            $this->addFlash('success', 'Registration successful! Please check your email for confirmation. You can now log in.');
+            $this->addFlash('success', 'Registration successful! Please check your email to verify your account before logging in.');
 
             return true;
         } catch (UniqueConstraintViolationException $e) {
@@ -80,7 +83,7 @@ class RegistrationController extends AbstractController
             return false;
         } catch (\Exception $e) {
             // Handle email sending errors gracefully
-            $this->addFlash('warning', 'Registration successful, but we couldn\'t send the confirmation email. You can still log in.');
+            $this->addFlash('warning', 'Registration successful, but we couldn\'t send the verification email. Please contact support.');
 
             return true;
         }
