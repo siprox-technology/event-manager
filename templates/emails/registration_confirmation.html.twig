@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Registration Confirmed - Event Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #10B981;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            background-color: #f9f9f9;
+            padding: 30px;
+            border-radius: 0 0 8px 8px;
+        }
+        .info-box {
+            background-color: #E0F2FE;
+            border-left: 4px solid #0EA5E9;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #10B981;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>✅ Registration Confirmed!</h1>
+    </div>
+    
+    <div class="content">
+        <h2>Welcome, {{ user.firstName ?? 'New User' }}!</h2>
+        
+        <p>Your registration has been successfully completed. You're all set to start using Event Manager!</p>
+        
+        <div class="info-box">
+            <h3>Your Account Details:</h3>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Registration Date:</strong> {{ user.createdAt|date('F j, Y \\a\\t g:i A') }}</p>
+            {% if user.firstName %}
+                <p><strong>Name:</strong> {{ user.firstName }}{% if user.lastName %} {{ user.lastName }}{% endif %}</p>
+            {% endif %}
+        </div>
+        
+        <h3>What's Next?</h3>
+        <p>Now that your account is active, you can:</p>
+        <ul>
+            <li>🎯 Discover upcoming events in your area</li>
+            <li>📝 Register for events that match your interests</li>
+            <li>👥 Connect with other event attendees</li>
+            <li>🎪 Create and manage your own events</li>
+        </ul>
+        
+        <p>
+            <a href="https://event-manager.ddev.site/login" class="button">
+                Login to Your Account
+            </a>
+        </p>
+        
+        <h3>Need Help?</h3>
+        <p>If you have any questions or need assistance getting started, our support team is here to help.</p>
+        
+        <p>Thank you for joining Event Manager!</p>
+        
+        <p>Best regards,<br>The Event Manager Team</p>
+    </div>
+    
+    <div class="footer">
+        <p>This confirmation email was sent to {{ user.email }} because you registered for an Event Manager account.</p>
+        <p>Event Manager - Making events accessible to everyone</p>
+    </div>
+</body>
+</html>
