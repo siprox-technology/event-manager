@@ -15,14 +15,15 @@ class UserChecker implements UserCheckerInterface
             return;
         }
 
-        if (!$user->isActive()) {
-            throw new CustomUserMessageAccountStatusException('Your account is not active.');
-        }
-
+        // Check email verification first, as unverified users are also inactive
         if (!$user->isEmailVerified()) {
             throw new CustomUserMessageAccountStatusException(
                 'Your email address is not verified. Please check your email and click the verification link before logging in.'
             );
+        }
+
+        if (!$user->isActive()) {
+            throw new CustomUserMessageAccountStatusException('Your account is not active.');
         }
     }
 

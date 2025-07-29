@@ -74,8 +74,7 @@ class RegistrationController extends AbstractController
             // Send verification email
             $emailVerificationService->sendVerificationEmail($user);
 
-            $this->addFlash('success', 'Registration successful! Please check your email to verify your account before logging in.');
-
+            // No flash message needed - we redirect to a dedicated verification pending page
             return true;
         } catch (UniqueConstraintViolationException $e) {
             $this->addFlash('error', 'This email address is already registered.');
