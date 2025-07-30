@@ -78,7 +78,7 @@ final class RegistrationControllerTest extends WebTestCase
         self::assertSame('Test', $user->getFirstName());
         self::assertSame('User', $user->getLastName());
         self::assertContains('ROLE_USER', $user->getRoles());
-        
+
         // Check that user is not yet active and email is not verified
         self::assertFalse($user->isActive());
         self::assertFalse($user->isEmailVerified());

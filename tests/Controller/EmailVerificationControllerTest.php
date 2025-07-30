@@ -27,7 +27,7 @@ final class EmailVerificationControllerTest extends WebTestCase
         $user->setUpdatedAt(new \DateTimeImmutable());
         $user->setIsActive($isVerified);
         $user->setIsEmailVerified($isVerified);
-        
+
         if (!$isVerified) {
             $user->generateEmailVerificationToken();
         }
@@ -37,7 +37,7 @@ final class EmailVerificationControllerTest extends WebTestCase
 
         return $user;
     }
-    
+
     public function testVerifyEmailWithValidToken(): void
     {
         $client = static::createClient();
@@ -94,11 +94,11 @@ final class EmailVerificationControllerTest extends WebTestCase
         // Create a user with an expired verification token
         $email = $this->getUniqueEmail('expired');
         $user = $this->createTestUser($entityManager, $email);
-        
+
         // Set expiration date in the past
         $user->setEmailVerificationTokenExpiresAt(new \DateTimeImmutable('-1 hour'));
         $entityManager->flush();
-        
+
         $token = $user->getEmailVerificationToken();
 
         // Try to verify with the expired token
@@ -143,7 +143,7 @@ final class EmailVerificationControllerTest extends WebTestCase
 
         // Visit the resend verification page
         $crawler = $client->request('GET', '/resend-verification');
-        
+
         // Submit the form with the verified user's email
         $form = $crawler->selectButton('Send Verification Email')->form();
         $client->submit($form, [

@@ -33,7 +33,7 @@ class TestEmailCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        
+
         $email = $input->getOption('email');
         $type = $input->getOption('type');
 

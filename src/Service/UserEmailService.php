@@ -12,8 +12,7 @@ class UserEmailService
     public function __construct(
         private MailerInterface $mailer,
         private string $fromEmail = 'noreply@event-manager.local'
-    ) {
-    }
+    ) {}
 
     public function sendWelcomeEmail(User $user): void
     {

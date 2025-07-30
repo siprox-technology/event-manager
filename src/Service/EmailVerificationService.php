@@ -17,8 +17,7 @@ class EmailVerificationService
         private UrlGeneratorInterface $urlGenerator,
         private UserEmailService $userEmailService,
         private string $fromEmail = 'noreply@event-manager.local'
-    ) {
-    }
+    ) {}
 
     public function sendVerificationEmail(User $user): void
     {

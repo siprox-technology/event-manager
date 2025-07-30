@@ -15,8 +15,7 @@ class EmailVerificationController extends AbstractController
     public function __construct(
         private EmailVerificationService $emailVerificationService,
         private EntityManagerInterface $entityManager
-    ) {
-    }
+    ) {}
 
     #[Route('/verify-email/{token}', name: 'app_verify_email', methods: ['GET'])]
     public function verifyEmail(string $token): Response
@@ -25,12 +24,12 @@ class EmailVerificationController extends AbstractController
 
         if ($isVerified) {
             $this->addFlash('success', 'Your email has been verified successfully! You can now log in to your account.');
-            
+
             return $this->redirectToRoute('app_login');
         }
 
         $this->addFlash('error', 'Invalid or expired verification link. Please request a new verification email.');
-        
+
         return $this->redirectToRoute('app_resend_verification');
     }
 
@@ -42,7 +41,7 @@ class EmailVerificationController extends AbstractController
 
             if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $this->addFlash('error', 'Please provide a valid email address.');
-                
+
                 return $this->redirectToRoute('app_resend_verification');
             }
 
@@ -52,13 +51,13 @@ class EmailVerificationController extends AbstractController
             if (!$user) {
                 // Don't reveal if email exists for security
                 $this->addFlash('info', 'If an account with that email exists and is not yet verified, a verification email has been sent.');
-                
+
                 return $this->redirectToRoute('app_resend_verification');
             }
 
             if ($user->isEmailVerified()) {
                 $this->addFlash('info', 'Your email is already verified. You can log in to your account.');
-                
+
                 return $this->redirectToRoute('app_login');
             }
 
