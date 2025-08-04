@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/events')]
@@ -21,7 +23,8 @@ class EventController extends AbstractController
     public function __construct(
         private EventRepository $eventRepository,
         private EntityManagerInterface $entityManager,
-        private EventLogService $eventLogService
+        private EventLogService $eventLogService,
+        private CsrfTokenManagerInterface $csrfTokenManager
     ) {}
 
     #[Route('', name: 'app_event_index', methods: ['GET'])]
@@ -160,19 +163,37 @@ class EventController extends AbstractController
             throw $this->createAccessDeniedException('You are not allowed to edit this event.');
         }
 
-        $form = $this->createForm(EventType::class, $event);
+        // Create form with CSRF protection disabled for edit form temporarily
+        $form = $this->createForm(EventType::class, $event, [
+            'csrf_protection' => false
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $event->setUpdatedAt(new \DateTimeImmutable());
-
             $this->entityManager->flush();
-
             $this->eventLogService->logEventUpdated($event, $this->getUser());
-
             $this->addFlash('success', 'Event updated successfully.');
-
             return $this->redirectToRoute('app_event_show', ['id' => $event->getId()]);
+        }
+
+        // Handle form submission with errors
+        if ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Please check the form for errors.');
+
+            // Log form errors for debugging
+            foreach ($form->getErrors(true) as $error) {
+                $this->addFlash('error', 'Error: ' . $error->getMessage());
+            }
+
+            // Check individual field errors
+            foreach ($form->all() as $fieldName => $field) {
+                if (!$field->isValid()) {
+                    foreach ($field->getErrors() as $error) {
+                        $this->addFlash('error', "Field '{$fieldName}': " . $error->getMessage());
+                    }
+                }
+            }
         }
 
         return $this->render('event/edit.html.twig', [

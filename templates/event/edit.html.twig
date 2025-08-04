@@ -33,7 +33,29 @@
         <!-- Form -->
         <div class="bg-white shadow rounded-lg">
             <div class="px-6 py-6">
-                {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                {{ form_start(form, {
+                    'attr': {'class': 'space-y-6'},
+                    'method': 'POST'
+                }) }}
+                
+                <!-- Display form errors at the top -->
+                {% if not form.vars.valid %}
+                    <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-800">Please correct the following errors:</h3>
+                                <div class="mt-2 text-sm text-red-700">
+                                    {{ form_errors(form) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
                 
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <!-- Title -->
@@ -42,7 +64,11 @@
                             {{ form_label(form.title) }}
                         </label>
                         {{ form_widget(form.title) }}
-                        {{ form_errors(form.title) }}
+                        {% if form.title.vars.errors|length > 0 %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form_errors(form.title) }}
+                            </div>
+                        {% endif %}
                     </div>
 
                     <!-- Location -->
@@ -51,7 +77,11 @@
                             {{ form_label(form.location) }}
                         </label>
                         {{ form_widget(form.location) }}
-                        {{ form_errors(form.location) }}
+                        {% if form.location.vars.errors|length > 0 %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form_errors(form.location) }}
+                            </div>
+                        {% endif %}
                     </div>
 
                     <!-- Description -->
@@ -60,7 +90,11 @@
                             {{ form_label(form.description) }}
                         </label>
                         {{ form_widget(form.description) }}
-                        {{ form_errors(form.description) }}
+                        {% if form.description.vars.errors|length > 0 %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form_errors(form.description) }}
+                            </div>
+                        {% endif %}
                     </div>
 
                     <!-- Start Date -->
@@ -69,7 +103,11 @@
                             {{ form_label(form.startDate) }}
                         </label>
                         {{ form_widget(form.startDate) }}
-                        {{ form_errors(form.startDate) }}
+                        {% if form.startDate.vars.errors|length > 0 %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form_errors(form.startDate) }}
+                            </div>
+                        {% endif %}
                     </div>
 
                     <!-- End Date -->
@@ -78,7 +116,11 @@
                             {{ form_label(form.endDate) }}
                         </label>
                         {{ form_widget(form.endDate) }}
-                        {{ form_errors(form.endDate) }}
+                        {% if form.endDate.vars.errors|length > 0 %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form_errors(form.endDate) }}
+                            </div>
+                        {% endif %}
                     </div>
 
                     <!-- Max Participants -->
@@ -87,7 +129,11 @@
                             {{ form_label(form.maxParticipants) }}
                         </label>
                         {{ form_widget(form.maxParticipants) }}
-                        {{ form_errors(form.maxParticipants) }}
+                        {% if form.maxParticipants.vars.errors|length > 0 %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form_errors(form.maxParticipants) }}
+                            </div>
+                        {% endif %}
                     </div>
 
                     <!-- Status -->
@@ -96,7 +142,11 @@
                             {{ form_label(form.status) }}
                         </label>
                         {{ form_widget(form.status) }}
-                        {{ form_errors(form.status) }}
+                        {% if form.status.vars.errors|length > 0 %}
+                            <div class="mt-1 text-sm text-red-600">
+                                {{ form_errors(form.status) }}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 

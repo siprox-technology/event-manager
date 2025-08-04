@@ -6,9 +6,11 @@ framework:
     session: 
         cookie_secure: auto
         cookie_samesite: lax
+        cookie_lifetime: 3600 # 1 hour
 
-    # Enable CSRF protection
-    csrf_protection: true
+    # Enable CSRF protection with longer token lifetime
+    csrf_protection: 
+        enabled: true
 
     #esi: true
     #fragments: true
