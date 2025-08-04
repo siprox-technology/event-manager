@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Event;
+use App\Entity\User;
+use App\Form\EventType;
 use App\Repository\EventRepository;
 use App\Service\EventLogService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,8 +22,7 @@ class EventController extends AbstractController
         private EventRepository $eventRepository,
         private EntityManagerInterface $entityManager,
         private EventLogService $eventLogService
-    ) {
-    }
+    ) {}
 
     #[Route('', name: 'app_event_index', methods: ['GET'])]
     public function index(Request $request): Response
@@ -73,7 +74,7 @@ class EventController extends AbstractController
     public function upcoming(): JsonResponse
     {
         $events = $this->eventRepository->findUpcoming(10);
-        
+
         $eventData = array_map(function (Event $event) {
             return [
                 'id' => $event->getId(),
@@ -92,6 +93,35 @@ class EventController extends AbstractController
         return new JsonResponse($eventData);
     }
 
+    #[Route('/new', name: 'app_event_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function new(Request $request): Response
+    {
+        $event = new Event();
+        $form = $this->createForm(EventType::class, $event);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $event->setCreatedBy($this->getUser());
+            $event->setCreatedAt(new \DateTimeImmutable());
+            $event->setUpdatedAt(new \DateTimeImmutable());
+
+            $this->entityManager->persist($event);
+            $this->entityManager->flush();
+
+            $this->eventLogService->logEventCreated($event);
+
+            $this->addFlash('success', 'Event created successfully.');
+
+            return $this->redirectToRoute('app_event_show', ['id' => $event->getId()]);
+        }
+
+        return $this->render('event/new.html.twig', [
+            'event' => $event,
+            'form' => $form,
+        ]);
+    }
+
     #[Route('/{id}', name: 'app_event_show', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function show(Event $event): Response
     {
@@ -99,12 +129,129 @@ class EventController extends AbstractController
             'event' => $event,
             'canRegister' => $this->canUserRegister($event),
             'isRegistered' => $this->isUserRegistered($event),
+            'canEdit' => $this->canUserEditEvent($event),
         ]);
+    }
+
+    #[Route('/{id}/edit', name: 'app_event_edit', methods: ['GET', 'POST'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_USER')]
+    public function edit(Request $request, Event $event): Response
+    {
+        if (!$this->canUserEditEvent($event)) {
+            throw $this->createAccessDeniedException('You are not allowed to edit this event.');
+        }
+
+        $form = $this->createForm(EventType::class, $event);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $event->setUpdatedAt(new \DateTimeImmutable());
+
+            $this->entityManager->flush();
+
+            $this->eventLogService->logEventUpdated($event, $this->getUser());
+
+            $this->addFlash('success', 'Event updated successfully.');
+
+            return $this->redirectToRoute('app_event_show', ['id' => $event->getId()]);
+        }
+
+        return $this->render('event/edit.html.twig', [
+            'event' => $event,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_event_delete', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_USER')]
+    public function delete(Request $request, Event $event): Response
+    {
+        if (!$this->canUserEditEvent($event)) {
+            throw $this->createAccessDeniedException('You are not allowed to delete this event.');
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $event->getId(), $request->request->get('_token'))) {
+            // Log before deletion since we need the event data
+            $this->eventLogService->log(
+                'event_deleted',
+                [
+                    'event_id' => $event->getId(),
+                    'event_title' => $event->getTitle(),
+                    'event_status' => $event->getStatus(),
+                ],
+                $this->getUser()
+            );
+
+            $this->entityManager->remove($event);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Event deleted successfully.');
+        }
+
+        return $this->redirectToRoute('app_event_index');
+    }
+
+    #[Route('/{id}/register', name: 'app_event_register', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_USER')]
+    public function register(Request $request, Event $event): Response
+    {
+        if (!$this->canUserRegister($event)) {
+            $this->addFlash('error', 'You cannot register for this event.');
+            return $this->redirectToRoute('app_event_show', ['id' => $event->getId()]);
+        }
+
+        if ($this->isUserRegistered($event)) {
+            $this->addFlash('warning', 'You are already registered for this event.');
+            return $this->redirectToRoute('app_event_show', ['id' => $event->getId()]);
+        }
+
+        if ($this->isCsrfTokenValid('register' . $event->getId(), $request->request->get('_token'))) {
+            $event->addParticipant($this->getUser());
+            $this->entityManager->flush();
+
+            $this->eventLogService->logEventParticipantAdded($event, $this->getUser());
+
+            $this->addFlash('success', 'You have successfully registered for this event.');
+        }
+
+        return $this->redirectToRoute('app_event_show', ['id' => $event->getId()]);
+    }
+
+    #[Route('/{id}/unregister', name: 'app_event_unregister', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_USER')]
+    public function unregister(Request $request, Event $event): Response
+    {
+        if (!$this->isUserRegistered($event)) {
+            $this->addFlash('warning', 'You are not registered for this event.');
+            return $this->redirectToRoute('app_event_show', ['id' => $event->getId()]);
+        }
+
+        if ($this->isCsrfTokenValid('unregister' . $event->getId(), $request->request->get('_token'))) {
+            $event->removeParticipant($this->getUser());
+            $this->entityManager->flush();
+
+            /** @var User $user */
+            $user = $this->getUser();
+            $this->eventLogService->log(
+                'event_participant_removed',
+                [
+                    'event_id' => $event->getId(),
+                    'event_title' => $event->getTitle(),
+                    'participant_id' => $user->getId(),
+                    'participant_email' => $user->getEmail(),
+                ],
+                $user
+            );
+
+            $this->addFlash('success', 'You have successfully unregistered from this event.');
+        }
+
+        return $this->redirectToRoute('app_event_show', ['id' => $event->getId()]);
     }
 
     private function canUserRegister(Event $event): bool
     {
-        return $event->getStatus() === Event::STATUS_PLANNED 
+        return $event->getStatus() === Event::STATUS_PLANNED
             && $event->canAcceptMoreParticipants()
             && $event->isUpcoming();
     }
@@ -119,7 +266,7 @@ class EventController extends AbstractController
     {
         $user = $this->getUser();
         return $user && (
-            $event->getCreatedBy() === $user || 
+            $event->getCreatedBy() === $user ||
             in_array('ROLE_ADMIN', $user->getRoles())
         );
     }

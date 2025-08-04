@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create New Event{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gray-50 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Create New Event</h1>
+                    <p class="mt-2 text-sm text-gray-600">Fill in the details to create your event</p>
+                </div>
+                <a href="{{ path('app_event_index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Back to Events
+                </a>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-6 py-6">
+                {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <!-- Title -->
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">
+                            {{ form_label(form.title) }}
+                        </label>
+                        {{ form_widget(form.title) }}
+                        {{ form_errors(form.title) }}
+                    </div>
+
+                    <!-- Location -->
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">
+                            {{ form_label(form.location) }}
+                        </label>
+                        {{ form_widget(form.location) }}
+                        {{ form_errors(form.location) }}
+                    </div>
+
+                    <!-- Description -->
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">
+                            {{ form_label(form.description) }}
+                        </label>
+                        {{ form_widget(form.description) }}
+                        {{ form_errors(form.description) }}
+                    </div>
+
+                    <!-- Start Date -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">
+                            {{ form_label(form.startDate) }}
+                        </label>
+                        {{ form_widget(form.startDate) }}
+                        {{ form_errors(form.startDate) }}
+                    </div>
+
+                    <!-- End Date -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">
+                            {{ form_label(form.endDate) }}
+                        </label>
+                        {{ form_widget(form.endDate) }}
+                        {{ form_errors(form.endDate) }}
+                    </div>
+
+                    <!-- Max Participants -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">
+                            {{ form_label(form.maxParticipants) }}
+                        </label>
+                        {{ form_widget(form.maxParticipants) }}
+                        {{ form_errors(form.maxParticipants) }}
+                    </div>
+
+                    <!-- Status -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">
+                            {{ form_label(form.status) }}
+                        </label>
+                        {{ form_widget(form.status) }}
+                        {{ form_errors(form.status) }}
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
+                    <a href="{{ path('app_event_index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Cancel
+                    </a>
+                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        Create Event
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
