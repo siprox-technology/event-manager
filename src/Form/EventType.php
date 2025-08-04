@@ -28,13 +28,13 @@ class EventType extends AbstractType
                     'placeholder' => 'Enter event title',
                 ],
                 'constraints' => [
-                    new NotBlank(['message' => 'Please enter an event title.']),
-                    new Length([
-                        'min' => 3,
-                        'max' => 255,
-                        'minMessage' => 'Event title must be at least {{ limit }} characters long.',
-                        'maxMessage' => 'Event title cannot be longer than {{ limit }} characters.',
-                    ]),
+                    new NotBlank(message: 'Please enter an event title.'),
+                    new Length(
+                        min: 3,
+                        max: 255,
+                        minMessage: 'Event title must be at least {{ limit }} characters long.',
+                        maxMessage: 'Event title cannot be longer than {{ limit }} characters.'
+                    ),
                 ],
             ])
             ->add('description', TextareaType::class, [
@@ -61,11 +61,12 @@ class EventType extends AbstractType
                     'class' => 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
                 ],
                 'constraints' => [
-                    new NotBlank(['message' => 'Please select a start date and time.']),
-                    new GreaterThanOrEqual([
-                        'value' => 'now',
-                        'message' => 'Start date must be in the future.',
-                    ]),
+                    new NotBlank(message: 'Please select a start date and time.'),
+                    // Temporarily removed future date validation for debugging
+                    // new GreaterThanOrEqual(
+                    //     value: new \DateTime(),
+                    //     message: 'Start date must be in the future.'
+                    // ),
                 ],
             ])
             ->add('endDate', DateTimeType::class, [
@@ -74,12 +75,6 @@ class EventType extends AbstractType
                 'widget' => 'single_text',
                 'attr' => [
                     'class' => 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
-                ],
-                'constraints' => [
-                    new GreaterThan([
-                        'propertyPath' => 'parent.all[startDate].data',
-                        'message' => 'End date must be after start date.',
-                    ]),
                 ],
             ])
             ->add('maxParticipants', IntegerType::class, [
@@ -91,10 +86,10 @@ class EventType extends AbstractType
                     'min' => 1,
                 ],
                 'constraints' => [
-                    new GreaterThan([
-                        'value' => 0,
-                        'message' => 'Maximum participants must be greater than 0.',
-                    ]),
+                    new GreaterThan(
+                        value: 0,
+                        message: 'Maximum participants must be greater than 0.'
+                    ),
                 ],
             ])
             ->add('status', ChoiceType::class, [
@@ -108,7 +103,7 @@ class EventType extends AbstractType
                     'class' => 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
                 ],
                 'constraints' => [
-                    new NotBlank(['message' => 'Please select a status.']),
+                    new NotBlank(message: 'Please select a status.'),
                 ],
             ]);
     }

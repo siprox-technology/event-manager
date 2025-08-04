@@ -116,6 +116,25 @@ class EventController extends AbstractController
             return $this->redirectToRoute('app_event_show', ['id' => $event->getId()]);
         }
 
+        // Add flash message if form was submitted but has errors
+        if ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Please check the form for errors.');
+
+            // Debug: Log form errors for development
+            foreach ($form->getErrors(true) as $error) {
+                $this->addFlash('error', 'Error: ' . $error->getMessage());
+            }
+
+            // Debug: Check individual field errors
+            foreach ($form->all() as $fieldName => $field) {
+                if (!$field->isValid()) {
+                    foreach ($field->getErrors() as $error) {
+                        $this->addFlash('error', "Field '{$fieldName}': " . $error->getMessage());
+                    }
+                }
+            }
+        }
+
         return $this->render('event/new.html.twig', [
             'event' => $event,
             'form' => $form,

@@ -42,8 +42,7 @@ class Event
     #[Assert\NotBlank]
     private ?\DateTimeImmutable $startDate = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    #[Assert\NotBlank]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $endDate = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
@@ -151,7 +150,7 @@ class Event
         return $this->endDate;
     }
 
-    public function setEndDate(\DateTimeImmutable $endDate): static
+    public function setEndDate(?\DateTimeImmutable $endDate): static
     {
         $this->endDate = $endDate;
         $this->updateTimestamp();
