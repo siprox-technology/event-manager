@@ -186,6 +186,14 @@
                             Edit Event
                         </a>
                     {% endif %}
+                    {% if canDelete %}
+                        <form method="post" action="{{ path('app_event_delete', {'id': event.id}) }}" class="inline">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg transition duration-200">
+                                Delete Event
+                            </button>
+                        </form>
+                    {% endif %}
                 </div>
             </div>
         </div>
