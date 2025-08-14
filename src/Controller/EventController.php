@@ -152,6 +152,7 @@ class EventController extends AbstractController
             'canRegister' => $this->canUserRegister($event),
             'isRegistered' => $this->isUserRegistered($event),
             'canEdit' => $this->canUserEditEvent($event),
+            'canDelete' => $this->canUserDeleteEvent($event),
         ]);
     }
 
@@ -303,6 +304,14 @@ class EventController extends AbstractController
     }
 
     private function canUserEditEvent(Event $event): bool
+    {
+        $user = $this->getUser();
+        return $user && (
+            $event->getCreatedBy() === $user ||
+            in_array('ROLE_ADMIN', $user->getRoles())
+        );
+    }
+    private function canUserDeleteEvent(Event $event): bool
     {
         $user = $this->getUser();
         return $user && (
